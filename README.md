@@ -24,7 +24,6 @@ A GenAI-powered NBA player information and team management system that leverages
 - **Function Calling**: Used for retrieving player details, game performance, salary information, and user budget management
 - **Few-Shot Prompting**: Implemented for better context understanding and response generation
 - **RAG (Retrieval-Augmented Generation)**: Applied for news article processing and contextual responses
-- **Natural Language Understanding**: Advanced prompt engineering for accurate query interpretation
 - **LangChain Agents**:
   - **Team Builder Agent**: Uses LangChain to process user inputs, extract parameters, and manage team building operations
   - **Player Detail Agent**: Uses LangChain for parsing user queries and converting them into structured function calls
@@ -102,7 +101,7 @@ A GenAI-powered NBA player information and team management system that leverages
 ## Usage
 Use the chat interface to:
    - Ask questions about NBA players (powered by GenAI)
-   - Get AI-analyzed player statistics
+   - Get player statistics
    - Build optimized teams within budget constraints
    - Access AI-curated NBA news with context
 
