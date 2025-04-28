@@ -1,8 +1,11 @@
 # NBA Player Q&A Assistant
 
 A GenAI-powered NBA player information and team management system that leverages advanced language models and data integration to provide comprehensive player insights, news, and team building capabilities.
+![截圖 2025-04-28 下午4 01 00](https://github.com/user-attachments/assets/f28bd9ec-7fe1-4e7d-8a57-db3a30ae16b3)
+
 
 ## Features
+
 
 - **AI-Powered Player Analysis**: Get detailed statistics and insights about NBA players using GenAI
 - **Smart Team Building**: AI-assisted team creation with budget optimization
