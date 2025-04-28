@@ -122,7 +122,7 @@ Use the chat interface to:
   - Vector Database for news articles
   - Web scraping utilities
 
-- **AI/ML**:
+- **LLM**:
   - OpenAI GPT models
   - LangChain for agent implementation
   - Function calling
