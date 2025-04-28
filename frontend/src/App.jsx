@@ -83,7 +83,7 @@ function AppContent() {
   }), []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-neutral-100">
       <NavBar />
       <Routes location={location}>
         <Route path="/" element={memoizedComponents.homepage} />

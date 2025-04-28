@@ -87,8 +87,7 @@ def get_five_players_salary_tool(rank) -> str:
     response_data = {
         "message": f"Based on your budget, here are REAL NBA players from rank {rank}:",
         "recommended_rank": rank,
-        "players": player_list,
-        "note": "These are actual NBA players from the database. Always use this data in your response."
+        "players": player_list
     }
     
     # Convert the dictionary to a JSON string
@@ -188,11 +187,11 @@ def check_budget_strategy(current_budget, team_size=0, target_team_size=8) -> st
         
         # Determine appropriate rank and budget tier
         if current_budget < 20000000:  # Less than $20M
-            appropriate_rank = 401 + (team_size * 50)
+            appropriate_rank = 401
             budget_tier = "very_limited"
             rank_range = "401-609"
         elif current_budget < 40000000:  # $20M to $40M
-            appropriate_rank = 201 + (team_size * 50)
+            appropriate_rank = 201
             budget_tier = "limited"
             rank_range = "201-400"
         elif current_budget < 80000000:  # $40M to $80M
@@ -252,6 +251,13 @@ ALWAYS follow these simple steps when recommending players:
    - Recalculate remaining budget with the newly picked player
    - Use check_budget_strategy again to determine the next appropriate rank
    - Recommend five new players based on the updated rank
+
+REMEMBER THESE BUDGET-BASED RECOMMENDATION RULES:
+- Budget < $20M: "very_limited" tier, rank range 401-609, recommended rank = 401
+- Budget < $40M: "limited" tier, rank range 201-400, recommended rank = 201
+- Budget < $80M: "moderate" tier, rank range 101-200, recommended rank = 101
+- Budget < $160M: "good" tier, rank range 31-100, recommended rank = 31
+- Budget ≥ $160M: "excellent" tier, rank range 1-30, recommended rank = 1
 
 FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
 [five players]

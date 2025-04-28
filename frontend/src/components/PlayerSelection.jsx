@@ -160,11 +160,11 @@ const PlayerSelection = ({ onPlayerSelect }) => {
   return (
     <div className="mt-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Available Players</h2>
+        <h2 className="text-xl font-bold text-primary-800">Available Players</h2>
         <div className="flex space-x-2">
           <button 
             onClick={handleRefreshPlayers}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm"
+            className="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-1 rounded text-sm transition duration-150"
           >
             Refresh Players
           </button>
@@ -172,24 +172,24 @@ const PlayerSelection = ({ onPlayerSelect }) => {
       </div>
       
       {/* Manual selection form - returned to form submission approach */}
-      <form onSubmit={handleManualSearch} className="mb-4 p-3 bg-gray-100 rounded" data-allow-default="true">
-        <div className="text-md font-semibold mb-2">
+      <form onSubmit={handleManualSearch} className="mb-4 p-3 bg-neutral-50 rounded border border-neutral-200" data-allow-default="true">
+        <div className="text-md font-semibold mb-2 text-primary-800">
           Customize Player Selection
           {isUsingCustomRank && (
-            <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+            <span className="ml-2 bg-primary-100 text-primary-800 text-xs px-2 py-1 rounded">
               Using Custom Rank: {appliedRank}
             </span>
           )}
         </div>
         <div className="flex items-end gap-4">
           <div className="flex-grow">
-            <label className="block text-sm font-medium mb-1">Player Rank:</label>
+            <label className="block text-sm font-medium mb-1 text-neutral-700">Player Rank:</label>
             <input
               type="number"
               value={manualRank}
               onChange={(e) => setManualRank(e.target.value)}
               placeholder="Enter rank (e.g., 80, 250)"
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
               data-allow-default="true"
               min="1"
             />
@@ -197,40 +197,63 @@ const PlayerSelection = ({ onPlayerSelect }) => {
           
           <div className="flex space-x-2">
             <button
-              type="button"
-              onClick={clearManualInputs}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded text-sm"
-            >
-              Reset to Budget
-            </button>
-            <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+              className="bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded text-sm transition duration-150"
               data-allow-default="true"
             >
-              Apply Rank ✓
+              Apply Rank
+            </button>
+            
+            <button
+              type="button"
+              onClick={clearManualInputs}
+              className="bg-neutral-200 hover:bg-neutral-300 text-neutral-700 px-3 py-2 rounded text-sm transition duration-150"
+              data-allow-default="true"
+            >
+              Reset
             </button>
           </div>
         </div>
       </form>
-      
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-        {players.map((player, index) => (
-          <button
-            key={index}
-            onClick={(e) => handleSelectPlayer(player, e)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded shadow transition-colors"
-          >
-            <div className="flex flex-col items-start">
-              <span className="text-lg">{player.name}</span>
-              <div className="flex justify-between w-full mt-1">
-                <span className="text-sm opacity-80">Rank: {player.rank}</span>
-                <span className="text-sm opacity-80">{player.salary}</span>
-              </div>
-            </div>
-          </button>
-        ))}
+
+      {/* Available players table */}
+      <div className="bg-white rounded-lg border border-neutral-200 shadow-md overflow-hidden">
+        <table className="min-w-full divide-y divide-neutral-200">
+          <thead className="bg-primary-50">
+            <tr>
+              <th scope="col" className="px-3 py-2 text-left text-sm font-medium text-primary-800">Rank</th>
+              <th scope="col" className="px-3 py-2 text-left text-sm font-medium text-primary-800">Player</th>
+              <th scope="col" className="px-3 py-2 text-right text-sm font-medium text-primary-800">Salary</th>
+              <th scope="col" className="px-3 py-2 text-center text-sm font-medium text-primary-800">Add</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-200">
+            {players.map((player, index) => (
+              <tr key={index} className="hover:bg-neutral-50">
+                <td className="px-3 py-2 text-sm text-neutral-600">{player.rank || index + 1}</td>
+                <td className="px-3 py-2 text-sm font-medium text-neutral-900">{player.name}</td>
+                <td className="px-3 py-2 text-sm text-right text-neutral-600">{player.salary}</td>
+                <td className="px-3 py-2 text-center">
+                  <button
+                    onClick={(e) => handleSelectPlayer(player, e)}
+                    className="bg-primary-600 hover:bg-primary-700 text-white p-1 px-3 rounded text-xs transition duration-150"
+                    data-allow-default="true"
+                  >
+                    Add
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+      
+      {players.length === 0 && (
+        <div className="text-center py-6 bg-neutral-50 rounded-lg border border-neutral-200">
+          <p className="text-neutral-600">No players available for your current budget or rank.</p>
+          <p className="text-neutral-600 text-sm mt-1">Try a different rank or clear any filters.</p>
+        </div>
+      )}
     </div>
   );
 };

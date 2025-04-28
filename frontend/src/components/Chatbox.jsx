@@ -24,7 +24,7 @@ const PlayerButton = ({ button, onClick }) => {
   return (
     <button
       type="button"
-      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm inline-block cursor-pointer m-1"
+      className="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded text-sm inline-block cursor-pointer m-1 transition duration-150"
       onClick={handleClick}
       onMouseDown={(e) => e.preventDefault()}
     >
@@ -98,14 +98,14 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
 
   return (
     <div className="h-full w-full p-4">
-      <div className="bg-white rounded-lg border border-gray-200 p-5 flex flex-col h-full">
-        <h2 className="text-xl font-bold">🏀 NBA Player Q&A Assistant</h2>
-        <p className="text-gray-600 text-sm mb-4">Ask any question about NBA players</p>
+      <div className="bg-white rounded-lg border border-neutral-200 shadow-md p-5 flex flex-col h-full max-h-[90vh]">
+        <h2 className="text-xl font-bold text-primary-800">🏀 NBA Player Q&A Assistant</h2>
+        <p className="text-neutral-600 text-sm mb-4">Ask any question about NBA players</p>
         
         {/* Show recommended players in Team Builder mode */}
         {responseOption === "manager" && recommendedPlayers.length > 0 && (
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Recommended Players:</h3>
+          <div className="mb-4 p-3 bg-primary-50 rounded-lg border border-primary-100">
+            <h3 className="text-lg font-semibold mb-2 text-primary-800">Recommended Players:</h3>
             <div 
               className="flex flex-wrap gap-2"
               onClick={(e) => e.preventDefault()}
@@ -122,24 +122,24 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
           </div>
         )}
         
-        <div className="flex-1 overflow-y-auto mb-4">
+        <div className="flex-1 overflow-y-auto mb-4 min-h-[200px] max-h-[calc(90vh-200px)]">
           {messages.map((msg, index) => (
             <div
               key={index}
               className={`mb-3 p-3 rounded-lg ${
                 msg.role === "user" 
-                  ? "bg-blue-100 text-blue-800" 
+                  ? "bg-primary-100 text-primary-800" 
                   : msg.role === "system"
-                  ? "bg-gray-100 text-gray-800 italic"
-                  : "bg-red-100 text-red-800"
+                  ? "bg-neutral-100 text-neutral-800 italic"
+                  : "bg-secondary-50 text-secondary-800"
               } animate-fade-in`}
             >
               <strong className={
                 msg.role === "user" 
-                  ? "text-blue-900" 
+                  ? "text-primary-900" 
                   : msg.role === "system"
-                  ? "text-gray-900"
-                  : "text-red-900"
+                  ? "text-neutral-900"
+                  : "text-secondary-900"
               }>
                 {msg.role === "user" 
                   ? "You" 
@@ -152,15 +152,15 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      p: ({node, ...props}) => <p className="whitespace-pre-line text-red-800" {...props} />,
+                      p: ({node, ...props}) => <p className="whitespace-pre-line text-secondary-800" {...props} />,
                       h2: ({node, ...props}) => responseOption === "news" 
-                        ? <h2 className="text-xl font-bold mt-3 mb-1 text-red-900" {...props} /> 
+                        ? <h2 className="text-xl font-bold mt-3 mb-1 text-secondary-900" {...props} /> 
                         : <h2 {...props} />,
                       a: ({node, ...props}) => responseOption === "news" 
-                        ? <a className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" {...props} /> 
+                        ? <a className="text-primary-600 hover:underline" target="_blank" rel="noopener noreferrer" {...props} /> 
                         : <a {...props} />,
                       strong: ({node, ...props}) => responseOption === "news" 
-                        ? <strong className="font-bold text-red-900" {...props} /> 
+                        ? <strong className="font-bold text-secondary-900" {...props} /> 
                         : <strong {...props} />
                     }}
                   >
@@ -170,20 +170,20 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
               ) : (
                 <p className={
                   msg.role === "user" 
-                    ? "text-blue-800" 
-                    : "text-gray-800"
+                    ? "text-primary-800" 
+                    : "text-neutral-800"
                 }>{msg.content}</p>
               )}
             </div>
           ))}
           {isLoading && (
-            <div className="mb-3 p-3 rounded-lg bg-red-100">
+            <div className="mb-3 p-3 rounded-lg bg-secondary-50">
               <div className="flex items-center">
-                <strong className="text-red-900">Assistant:</strong>
+                <strong className="text-secondary-900">Assistant:</strong>
                 <div className="ml-2 flex space-x-1">
-                  <div className="w-2 h-2 bg-red-600 rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
-                  <div className="w-2 h-2 bg-red-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                  <div className="w-2 h-2 bg-red-600 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                  <div className="w-2 h-2 bg-secondary-600 rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
+                  <div className="w-2 h-2 bg-secondary-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                  <div className="w-2 h-2 bg-secondary-600 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
                 </div>
               </div>
             </div>
@@ -194,23 +194,23 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
         <div className="mt-auto flex">
           <input
             type="text"
-            className="flex-1 rounded-l-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 rounded-l-lg border border-neutral-300 p-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="Ask about NBA players"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={isLoading}
-            data-allow-default="true"
           />
           <button
+            type="button"
+            className={`rounded-r-lg px-4 py-2 text-white ${
+              prompt.trim() && !isLoading
+                ? "bg-primary-600 hover:bg-primary-700"
+                : "bg-neutral-400 cursor-not-allowed"
+            } transition duration-150`}
             onClick={handleSendClick}
             disabled={!prompt.trim() || isLoading}
-            className={`bg-blue-500 text-white px-4 py-2 rounded-r-lg 
-              ${(!prompt.trim() || isLoading) ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"}`}
-            type="button"
-            data-allow-default="true"
           >
-            {isLoading ? "Sending..." : "Send"}
+            Send
           </button>
         </div>
       </div>

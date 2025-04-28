@@ -17,37 +17,37 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
 
   return (
     <div className="flex flex-col gap-5 ml-5">
-      <div className="p-5 bg-gray-50 rounded-lg mt-5">
+      <div className="p-5 bg-white rounded-lg shadow-md border border-neutral-200 mt-5">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-[#1A1F2C]">Budget Overview</h2>
+          <h2 className="text-xl font-bold text-primary-800">Budget Overview</h2>
         </div>
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg mb-2">
           <div>
-            <p className="text-sm text-gray-600">Total Budget</p>
-            <p className="text-2xl font-bold text-[#1A1F2C]">${budget.toLocaleString()}</p>
+            <p className="text-sm text-neutral-600">Total Budget</p>
+            <p className="text-2xl font-bold text-neutral-800">${budget.toLocaleString()}</p>
           </div>
         </div>
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg mb-2">
           <div>
-            <p className="text-sm text-gray-600">Spent</p>
-            <p className="text-2xl font-bold text-[#1A1F2C]">${spent.toLocaleString()}</p>
+            <p className="text-sm text-neutral-600">Spent</p>
+            <p className="text-2xl font-bold text-neutral-800">${spent.toLocaleString()}</p>
           </div>
         </div>
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
           <div>
-            <p className="text-sm text-gray-600">Remaining</p>
-            <p className={`text-2xl font-bold ${remainingBudget < 0 ? 'text-red-600' : 'text-green-600'}`}>
+            <p className="text-sm text-neutral-600">Remaining</p>
+            <p className={`text-2xl font-bold ${remainingBudget < 0 ? 'text-red-600' : 'text-primary-600'}`}>
               ${remainingBudget.toLocaleString()}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="p-5 bg-gray-50 rounded-lg mt-2">
-        <h3 className="text-lg font-semibold mb-4">Settings</h3>
+      <div className="p-5 bg-white rounded-lg shadow-md border border-neutral-200 mt-2">
+        <h3 className="text-lg font-semibold mb-4 text-primary-800">Settings</h3>
 
         <select
-          className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 mb-4 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
           value={modelOption}
           onChange={(e) => setModelOption(e.target.value)}
         >
@@ -60,14 +60,14 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
 
         <button
           onClick={clearChatHistory}
-          className="w-full py-2 px-4 bg-red-50 text-red-600 border border-red-300 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-full py-2 px-4 bg-secondary-50 text-secondary-700 border border-secondary-200 rounded-md hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-secondary-500 transition duration-150"
           data-allow-default="true"
         >
           Clear Chat History
         </button>
 
-        <div className="border-t border-gray-200 my-4 pt-4">
-          <p className="text-sm text-gray-600">
+        <div className="border-t border-neutral-200 my-4 pt-4">
+          <p className="text-sm text-neutral-600">
             NBA Player Q&A Assistant can answer questions about NBA players,
             teams, games, and statistics.
           </p>
@@ -77,7 +77,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
         <div className="flex justify-center items-center relative w-full" data-menu-container="true">
           <button
             type="button"
-            className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
+            className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-primary-700 shadow-sm border border-primary-300 hover:bg-primary-50 transition duration-150"
             id="menu-button"
             aria-expanded={isOpen}
             aria-haspopup="true"
@@ -86,7 +86,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
           >
             Agent Options
             <svg
-              className="-mr-1 size-5 text-gray-400"
+              className="-mr-1 size-5 text-primary-400"
               viewBox="0 0 20 20"
               fill="currentColor"
               aria-hidden="true"
@@ -112,7 +112,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
               <div className="py-1 w-full" role="none">
                 <button
                   type="button"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  className="block w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-700"
                   role="menuitem"
                   tabIndex="-1"
                   id="menu-item-0"
@@ -123,7 +123,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
                 </button>
                 <button
                   type="button"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  className="block w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-700"
                   role="menuitem"
                   tabIndex="-1"
                   id="menu-item-1"
@@ -134,7 +134,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
                 </button>
                 <button
                   type="button"
-                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  className="block w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-700"
                   role="menuitem"
                   tabIndex="-1"
                   id="menu-item-2"
