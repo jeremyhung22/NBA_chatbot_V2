@@ -4,34 +4,36 @@ import remarkGfm from 'remark-gfm';
 
 // Add a custom PlayerButton component
 const PlayerButton = ({ button, onClick }) => {
+  // Handle click completely differently
   const handleClick = (e) => {
-    // Stop propagation and prevent default
+    // Prevent any browser default behavior
     if (e) {
-      e.stopPropagation();
       e.preventDefault();
+      e.stopPropagation();
     }
     
-    // Add a small delay to ensure the event is fully handled
-    setTimeout(() => {
-      onClick(button, e); // Pass both button data and event
-    }, 10);
-    
-    // Return false to prevent default browser behavior
+    // Call the callback directly
+    if (onClick && button) {
+      console.log('PlayerButton: Calling onClick with button data', button);
+      onClick(button);
+    }
     return false;
   };
 
+  // Use a button element with type="button" to prevent form submission
   return (
-    <span
+    <button
+      type="button"
+      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm inline-block cursor-pointer m-1"
       onClick={handleClick}
       onMouseDown={(e) => e.preventDefault()}
-      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors inline-block cursor-pointer"
     >
       {button.text}
-    </span>
+    </button>
   );
 };
 
-const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, responseOption, onButtonClick }) => {
+const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, responseOption, onButtonClick, recommendedPlayers }) => {
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom when messages change
@@ -41,11 +43,84 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
     }
   }, [messages]);
 
+  // Add a global click handler to prevent navigation
+  useEffect(() => {
+    const preventButtonNavigation = (e) => {
+      // If it's a button or inside a button container
+      if (e.target.closest('[data-button-container="true"]')) {
+        e.preventDefault();
+        console.log('Chatbox: Preventing default button behavior');
+      }
+    };
+
+    // Capture phase to get it before any other handlers
+    document.addEventListener('click', preventButtonNavigation, true);
+    
+    return () => {
+      document.removeEventListener('click', preventButtonNavigation, true);
+    };
+  }, []);
+
+  // Handle submit without form submission
+  const handleSendClick = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    if (prompt.trim() && !isLoading) {
+      handleSubmit();
+    }
+    
+    return false;
+  };
+
+  // Handle Enter key without form submission
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (prompt.trim() && !isLoading) {
+        handleSubmit();
+      }
+    }
+  };
+
+  // Handle button click with proper event prevention
+  const handleButtonClick = (buttonData, e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    console.log('Button clicked from container');
+    onButtonClick(buttonData);
+    return false;
+  };
+
   return (
     <div className="h-full w-full p-4">
       <div className="bg-white rounded-lg border border-gray-200 p-5 flex flex-col h-full">
         <h2 className="text-xl font-bold">🏀 NBA Player Q&A Assistant</h2>
         <p className="text-gray-600 text-sm mb-4">Ask any question about NBA players</p>
+        
+        {/* Show recommended players in Team Builder mode */}
+        {responseOption === "manager" && recommendedPlayers.length > 0 && (
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">Recommended Players:</h3>
+            <div 
+              className="flex flex-wrap gap-2"
+              onClick={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {recommendedPlayers.map((player, index) => (
+                <PlayerButton
+                  key={index}
+                  button={player}
+                  onClick={(buttonData) => handleButtonClick(buttonData)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
         
         <div className="flex-1 overflow-y-auto mb-4">
           {messages.map((msg, index) => (
@@ -91,19 +166,6 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
                   >
                     {msg.content}
                   </ReactMarkdown>
-                  
-                  {/* Render buttons if available */}
-                  {msg.buttons && msg.buttons.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {msg.buttons.map((button, btnIndex) => (
-                        <PlayerButton
-                          key={btnIndex}
-                          button={button}
-                          onClick={onButtonClick}
-                        />
-                      ))}
-                    </div>
-                  )}
                 </>
               ) : (
                 <p className={
@@ -136,21 +198,17 @@ const ChatBox = ({ messages, prompt, setPrompt, handleSubmit, isLoading, respons
             placeholder="Ask about NBA players"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                if (prompt.trim() && !isLoading) {
-                  handleSubmit();
-                }
-              }
-            }}
+            onKeyDown={handleKeyDown}
             disabled={isLoading}
+            data-allow-default="true"
           />
           <button
-            onClick={handleSubmit}
+            onClick={handleSendClick}
             disabled={!prompt.trim() || isLoading}
             className={`bg-blue-500 text-white px-4 py-2 rounded-r-lg 
               ${(!prompt.trim() || isLoading) ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"}`}
+            type="button"
+            data-allow-default="true"
           >
             {isLoading ? "Sending..." : "Send"}
           </button>

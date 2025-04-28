@@ -3,7 +3,21 @@ import { TeamContext } from '../contexts/TeamContext';
 import { useContext } from 'react';
 
 function MyTeamPage() {
-  const { team, removePlayer, budget, spent, remainingBudget, resetTeam, resetBudget } = useContext(TeamContext);
+  const { team, removePlayer, budget, spent, remainingBudget, resetTeam } = useContext(TeamContext);
+
+  const handleResetTeam = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Resetting team...");
+    resetTeam();
+  };
+
+  const handleRemovePlayer = (e, playerName) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Removing player:", playerName);
+    removePlayer(playerName);
+  };
 
   return (
     <div className="min-h-[calc(100vh-8rem)] container mx-auto px-4 py-4">
@@ -31,16 +45,11 @@ function MyTeamPage() {
               </div>
               <div className="mt-4 flex gap-2">
                 <button 
-                  onClick={() => resetTeam()} 
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                  onClick={handleResetTeam} 
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm w-full"
+                  data-allow-default="true"
                 >
                   Reset Team
-                </button>
-                <button 
-                  onClick={() => resetBudget()} 
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-                >
-                  Reset Budget
                 </button>
               </div>
             </div>
@@ -75,7 +84,8 @@ function MyTeamPage() {
                         <td className="px-4 py-3 text-center">
                           <button 
                             className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
-                            onClick={() => removePlayer(player.name)}
+                            onClick={(e) => handleRemovePlayer(e, player.name)}
+                            data-allow-default="true"
                           >
                             Remove
                           </button>

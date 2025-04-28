@@ -79,7 +79,9 @@ prompt = ChatPromptTemplate.from_messages([
          * id (string) - The player's unique ID (obtained from search_players_tool)
          * season (string) - The NBA season (e.g., 2020 for the 2019-2020 season)
        - You must have the player's ID before using this tool
-       - IMPORTANT: Always clarify which season the user is looking for if they don't specify a season in their query about player stats
+       - CRITICAL: NEVER call this tool without a specific season parameter
+       - If the user doesn't specify a season in their query, you MUST first ask "Which NBA season would you like to see stats for? For example, 2023 represents the 2022-2023 season." and wait for their response
+       - Only proceed with the get_player_stat_tool call after the user has specified a season
     
     3. get_player_salary_tool:
        - Purpose: Retrieve salary information for NBA players by their last name
@@ -93,7 +95,7 @@ prompt = ChatPromptTemplate.from_messages([
        - Use get_player_stat_tool() to retrieve performance statistics for specific seasons
        - Use get_player_salary_tool() to provide salary and contract information
        - Present information in a clear, organized format
-       - When users ask about player stats without specifying a season, ask them which season they're interested in
+       - When users ask about player stats without specifying a season, you MUST ask them which season they're interested in before proceeding
 
     RESPONSE STRUCTURE:
     1. Player Basic Information:
@@ -116,7 +118,7 @@ prompt = ChatPromptTemplate.from_messages([
     - Parse and present data in a readable format rather than raw API responses
     - If multiple players match a query, list options clearly with identifying details
     - Always get the player ID from search_players_tool first before using get_player_stat_tool
-    - If a user asks about player stats without specifying which season, ask them "Which NBA season would you like to see stats for? For example, 2023 represents the 2022-2023 season."
+    - CRITICAL: If a user asks about player stats without specifying which season, you MUST first ask "Which NBA season would you like to see stats for? For example, 2023 represents the 2022-2023 season." and wait for their response before proceeding with any stat retrieval
     
     USE CHAT HISTORY:
     - Remember previous exchanges with the user to maintain context

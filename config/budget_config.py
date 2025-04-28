@@ -4,7 +4,7 @@ This file serves as a single source of truth for budget settings.
 """
 
 # Default budget in dollars
-DEFAULT_BUDGET = 20000000  # $20,000,000
+DEFAULT_BUDGET = 200000000  # $200,000,000
 
 # Minimum allowed budget in dollars
 MIN_BUDGET = 1000000  # $1,000,000

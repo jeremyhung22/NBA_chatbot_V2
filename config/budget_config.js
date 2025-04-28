@@ -4,7 +4,7 @@
  */
 
 // Default budget in dollars
-export const DEFAULT_BUDGET = 20000000; // $20,000,000
+export const DEFAULT_BUDGET = 200000000; // $200,000,000
 
 // Minimum allowed budget in dollars 
 export const MIN_BUDGET = 1000000;  // $1,000,000

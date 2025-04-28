@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from config.budget_config import DEFAULT_BUDGET
 # MongoDB connection
 client = MongoClient("mongodb://localhost:27017/")
 db = client["nba_salaries"]
@@ -82,6 +83,30 @@ def get_next_available_rank(current_budget, current_rank):
     except Exception as e:
         print(f"Error finding next available rank: {str(e)}")
         return 1
+
+
+def get_five_players_within_budget(initial_budget=DEFAULT_BUDGET, picked_budget=0, start_rank=1):
+    """
+    Get five players within the remaining budget constraints.
+    
+    Args:
+        initial_budget (int): The initial budget amount, defaults to value from config
+        picked_budget (int): The budget already spent
+        start_rank (int): The starting rank to search from
+        
+    Returns:
+        list: Five players within the budget constraints
+    """
+    # Calculate the remaining budget
+    remaining_budget = calculate_remaining_budget(initial_budget, picked_budget)
+    
+    # Find the next available rank where players are within budget
+    next_rank = get_next_available_rank(remaining_budget, start_rank)
+    
+    # Get the top 5 players from that rank
+    players = get_top_5_players_from_rank(next_rank)
+    
+    return players
 
 
 

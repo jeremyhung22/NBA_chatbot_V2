@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 from team_agent import agent_function_calling as team_agent_function_calling
 import json
+from user_budget import get_five_players_within_budget, get_top_5_players_from_rank
 
 # Load environment variables
 load_dotenv()
@@ -73,27 +74,10 @@ def team_recommendations():
         # Get response from team agent
         response_text = team_agent_function_calling(user_query)
         
-        # Check if the response has button data (JSON format inside text)
-        buttons = []
-        try:
-            # Look for JSON objects in the response
-            import re
-            json_matches = re.findall(r'\{(?:[^{}]|(?:\{[^{}]*\}))*\}', response_text)
-            
-            for json_str in json_matches:
-                try:
-                    btn_data = json.loads(json_str)
-                    # Check if it looks like button data
-                    if "text" in btn_data and "action" in btn_data:
-                        buttons.append(btn_data)
-                except:
-                    continue
-        except Exception as e:
-            print(f"Error extracting buttons: {e}")
-        
+        # Return the text response directly without trying to extract buttons
         return jsonify({
             "message": response_text,
-            "buttons": buttons
+            "buttons": []  # Empty array for backward compatibility
         }), 200
 
     except Exception as e:
@@ -170,5 +154,60 @@ def get_news():
             "message": str(e)
         }), 500
 
+@app.route('/api/available-players', methods=['GET'])
+def available_players():
+    """
+    Returns the top 5 players based on rank or budget constraints.
+    """
+    try:
+        # Parse query parameters
+        budget_param = request.args.get('budget')
+        rank_param = request.args.get('rank')
+        
+        # Debug logging
+        print(f"DEBUG: available-players endpoint called with params - rank: {rank_param}, budget: {budget_param}")
+        
+        players = []
+        
+        # Priority: 1. Rank, 2. Budget
+        if rank_param and rank_param.isdigit():
+            # Get players by specific rank
+            rank = int(rank_param)
+            print(f"DEBUG: Using rank-based search with rank={rank}")
+            players = get_top_5_players_from_rank(rank)
+            print(f"DEBUG: Found {len(players)} players from rank {rank}")
+        else:
+            # Use budget-based logic (existing functionality)
+            current_budget = int(budget_param) if budget_param else None
+            print(f"DEBUG: Using budget-based search with budget={current_budget}")
+            
+            # Get five players using the function with the current budget
+            if current_budget is not None:
+                players = get_five_players_within_budget(initial_budget=current_budget, picked_budget=0, start_rank=1)
+            else:
+                players = get_five_players_within_budget()
+            print(f"DEBUG: Found {len(players)} players using budget search")
+        
+        # Format the player data for frontend
+        player_data = []
+        for player in players:
+            player_data.append({
+                'name': player.get('name', 'Unknown Player'),
+                'rank': player.get('rank', 'N/A'),
+                'salary': player.get('2024/25', '$0')
+            })
+        
+        print(f"DEBUG: Returning {len(player_data)} players to frontend")
+        return jsonify(player_data)
+    except Exception as e:
+        print(f"ERROR: Exception in available-players: {str(e)}")
+        return jsonify([
+            {"name": "LeBron James", "rank": "1.", "salary": "$47,600,000"},
+            {"name": "Stephen Curry", "rank": "2.", "salary": "$55,760,000"},
+            {"name": "Kevin Durant", "rank": "3.", "salary": "$51,200,000"},
+            {"name": "Giannis Antetokounmpo", "rank": "4.", "salary": "$48,800,000"},
+            {"name": "Nikola Jokic", "rank": "5.", "salary": "$50,200,000"}
+        ]), 200
+
 if __name__ == '__main__':
-    app.run(debug=True ,port=5000)
+    app.run(debug=True, port=5000)

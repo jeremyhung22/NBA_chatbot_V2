@@ -56,13 +56,13 @@ def convert_player_to_button_format(player_data) -> str:
 @tool
 def get_five_players_salary_tool(rank) -> str:
     """
-    Get five recommended players based on the current rank. The starting rank is 1
+    Get five recommended NBA players based on the specified rank.
     
     Args:
-        rank: The user's remaining budget for player selection
+        rank: The specific player rank to start recommendations from
     
     Returns:
-        A JSON string containing five recommended players with their salaries, ranks, and other information
+        A JSON string containing five real NBA players with their salaries, ranks, and other information
     """
     players = get_top_5_players_from_rank(rank)
     
@@ -79,13 +79,16 @@ def get_five_players_salary_tool(rank) -> str:
         player_info = {
             "name": player.get('name', ''),
             "salary": salary,
-            "rank": player.get('rank', '')
+            "rank": player.get('rank', ''),
+            "formatted_salary": player.get('2024/25', '$0') 
         }
         player_list.append(player_info)
     
     response_data = {
-        "message": "Based on your budget, here are the recommended players:",
-        "players": player_list
+        "message": f"Based on your budget, here are REAL NBA players from rank {rank}:",
+        "recommended_rank": rank,
+        "players": player_list,
+        "note": "These are actual NBA players from the database. Always use this data in your response."
     }
     
     # Convert the dictionary to a JSON string
@@ -152,36 +155,124 @@ def get_next_available_rank(current_budget, current_rank=1) -> int:
         return 1
 
 
+@tool
+def check_budget_strategy(current_budget, team_size=0, target_team_size=8) -> str:
+    """
+    Check budget strategy and recommend appropriate player ranks.
+    
+    Args:
+        current_budget (float): Current remaining budget
+        team_size (int): Current number of players on team
+        target_team_size (int): Target team size (default 8)
+    
+    Returns:
+        str: Budget strategy with team completion, budget percentages, and rank recommendation
+    """
+    try:
+        # Calculate key metrics
+        players_needed = target_team_size - team_size
+        team_completion_percentage = (team_size / target_team_size) * 100
+        budget_percentage_remaining = (current_budget / DEFAULT_BUDGET) * 100
+        budget_percentage_used = 100 - budget_percentage_remaining
+        
+        # Team and budget status summary
+        team_status = f"Team: {team_size}/{target_team_size} players ({team_completion_percentage:.1f}%)"
+        budget_status = f"Budget: ${current_budget:,.0f} remaining ({budget_percentage_remaining:.1f}%)"
+        
+        # If team is complete, return simple message
+        if players_needed <= 0:
+            return f"{team_status}, {budget_status}. Your team is complete."
+        
+        # Calculate average budget per remaining player
+        avg_budget_per_player = current_budget / players_needed if players_needed > 0 else 0
+        
+        # Determine appropriate rank and budget tier
+        if current_budget < 20000000:  # Less than $20M
+            appropriate_rank = 401 + (team_size * 50)
+            budget_tier = "very_limited"
+            rank_range = "401-609"
+        elif current_budget < 40000000:  # $20M to $40M
+            appropriate_rank = 201 + (team_size * 50)
+            budget_tier = "limited"
+            rank_range = "201-400"
+        elif current_budget < 80000000:  # $40M to $80M
+            appropriate_rank = 101 
+            budget_tier = "moderate"
+            rank_range = "101-200"
+        elif current_budget < 160000000:  # $80M to $160M
+            appropriate_rank = 31
+            budget_tier = "good"
+            rank_range = "31-100"
+        else:  # $160M or more
+            appropriate_rank = 1
+            budget_tier = "excellent"
+            rank_range = "1-30"
+        
+        # Check for budget imbalance
+        budget_imbalance = budget_percentage_used > (team_completion_percentage + 20)
+        
+        # Base summary message
+        summary = f"{team_status}, {budget_status}. Budget tier: {budget_tier} (rank range: {rank_range}). Recommend rank: {appropriate_rank}."
+        
+        # Add warnings for special cases
+        if budget_imbalance:
+            return f"{summary} WARNING: Budget usage ({budget_percentage_used:.1f}%) outpacing team completion ({team_completion_percentage:.1f}%)."
+        
+        return summary
+            
+    except Exception as e:
+        print(f"Error in budget strategy check: {str(e)}")
+        return f"Error checking budget. Recommend rank: 101."
+
+
 # Create the tools list
 tools = [
     get_five_players_salary_tool,
     calculate_remaining_budget_tool,
     get_next_available_rank,
-    convert_player_to_button_format
+    check_budget_strategy
 ]
 
 # Create consistent memory configuration
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", """You are an NBA team-building assistant that helps users build a team within their budget.
-    
-    ONLY answer questions related to team building and player recommendations. For ANY other questions (like player stats, news, game information, or general NBA questions), politely tell the user to use the other agent option instead.
-    
-    When a user asks for player recommendations, ALWAYS follow these steps in order:
-    1. First check if the user mentioned their budget in their question. If they did, use that budget value.
-       - If the user didn't specify a budget, use calculate_remaining_budget_tool without specifying a budget to get the default budget.
-       - The system will automatically use the configured DEFAULT_BUDGET.
-    2. Then use get_next_available_rank to find the next available rank based on the budget
-    3. Use get_five_players_salary_tool to get five player recommendations
-    4. For the five player recommendations, iterate through each player in the list and use convert_player_to_button_format on EACH player individually to create individual buttons
-    
-    When a user asks for a specific player, use convert_player_to_button_format directly on that single player's data without iteration.
-    
-    NEVER skip steps or change their order. Always give clear explanations to the user about what you're doing.
-    
-    Sample response for non-team building questions:
-    "I'm your team building assistant and can only help with player recommendations based on your budget. For questions about player stats, news, or other NBA information, please use the other agent option."
+    ("system", """You are an NBA team-building assistant. Keep responses clear and concise.
+
+ALWAYS follow these simple steps when recommending players:
+
+1. Check remaining budget:
+   - Use calculate_remaining_budget_tool to get current budget
+   - Use check_budget_strategy to analyze budget situation and get recommended rank
+
+2. Recommend five real players:
+   - ALWAYS use get_five_players_salary_tool with the rank from step 1
+   
+3. After a player is picked:
+   - Recalculate remaining budget with the newly picked player
+   - Use check_budget_strategy again to determine the next appropriate rank
+   - Recommend five new players based on the updated rank
+
+FORMAT YOUR RESPONSE EXACTLY LIKE THIS:
+[five players]
+Player 1: {{name}}, Rank: {{rank}}, Salary: {{formatted_salary}}
+Player 2: {{name}}, Rank: {{rank}}, Salary: {{formatted_salary}}
+Player 3: {{name}}, Rank: {{rank}}, Salary: {{formatted_salary}}
+Player 4: {{name}}, Rank: {{rank}}, Salary: {{formatted_salary}}
+Player 5: {{name}}, Rank: {{rank}}, Salary: {{formatted_salary}}
+
+[current picked percentage]
+Team: {{team_size}}/{{target_team_size}} players ({{team_completion_percentage:.1f}}%)
+
+[current remain budget percentage]
+Budget: ${{current_budget:,.0f}} remaining ({{budget_percentage_remaining:.1f}}%)
+
+[the player salary range based on the budget]
+Budget tier: {{budget_tier}} (rank range: {{rank_range}})
+Recommended rank: {{appropriate_rank}}
+
+NEVER make up player information. Always use get_five_players_salary_tool.
+NEVER use [Assistant to=functions.xyz] format in your responses.
     """),
     MessagesPlaceholder(variable_name="chat_history"),
     ("human", "{input}"),
@@ -193,7 +284,14 @@ llm = ChatOpenAI(temperature=0, model="gpt-4")
 agent = create_openai_functions_agent(llm, tools, prompt)
 
 # Use the memory with consistent configuration
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, memory=memory)
+agent_executor = AgentExecutor(
+    agent=agent, 
+    tools=tools, 
+    verbose=True, 
+    memory=memory,
+    handle_parsing_errors=True,  # Handle parsing errors
+    max_iterations=5,  # Limit maximum iterations to prevent loops
+)
 
 def process_user_message(message):
     """
@@ -206,15 +304,34 @@ def process_user_message(message):
         The agent's response as a string
     """
     try:
+        # Add a simple reminder to use the correct format and tools
+        enhanced_message = message + "\n\nReminder: Use get_five_players_salary_tool for real player data."
+        
         # Pass only the input message as expected by the executor
-        response = agent_executor.invoke({"input": message})
-        return response["output"]
+        response = agent_executor.invoke({"input": enhanced_message})
+        
+        # Get the output and clean up any function call syntax
+        output = response["output"]
+        if "[Assistant to=" in output or "[assistant to=" in output.lower():
+            output = output.split("]")[-1].strip()
+        
+        # We don't need to check for "Player 1", "Player 2" format anymore as it's our desired format
+        # Just check for truly made-up player patterns
+        if any(pattern in output for pattern in ["Player A", "Player B", "fictitious player"]):
+            output = "I need to provide real NBA player data. Let me correct that.\n\n" + output
+            
+        return output
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
 def agent_function_calling(user_query):
-    # Use the provided query directly instead of asking for input
+    # Get response from the agent
     response = process_user_message(user_query)
+    
+    # Final check for incorrect formats and made-up data
+    if "[" in response and "]" in response:
+        response = response.replace("[", "").replace("]", "")
+    
     print("\nAssistant:", response)
     print("\n" + "-"*50 + "\n")
     return response

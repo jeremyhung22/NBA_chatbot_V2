@@ -61,6 +61,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
         <button
           onClick={clearChatHistory}
           className="w-full py-2 px-4 bg-red-50 text-red-600 border border-red-300 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+          data-allow-default="true"
         >
           Clear Chat History
         </button>
@@ -73,7 +74,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
         </div>
       </div>
       <div className="w-full mt-3">
-        <div className="flex justify-center items-center relative w-full">
+        <div className="flex justify-center items-center relative w-full" data-menu-container="true">
           <button
             type="button"
             className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
@@ -81,6 +82,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
             aria-expanded={isOpen}
             aria-haspopup="true"
             onClick={toggleDropdown}
+            data-allow-default="true"
           >
             Agent Options
             <svg
@@ -100,11 +102,12 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
 
           {isOpen && (
             <div
-              className="absolute mt-2 w-full origin-top-center rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden top-full"
+              className="absolute mt-2 w-full origin-top-center rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden top-full z-50"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
               tabIndex="-1"
+              data-menu-dropdown="true"
             >
               <div className="py-1 w-full" role="none">
                 <button
@@ -114,6 +117,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
                   tabIndex="-1"
                   id="menu-item-0"
                   onClick={() => handleOptionClick('player_details')}
+                  data-allow-default="true"
                 >
                   Player Detail
                 </button>
@@ -124,6 +128,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
                   tabIndex="-1"
                   id="menu-item-1"
                   onClick={() => handleOptionClick('news')}
+                  data-allow-default="true"
                 >
                   NBA news
                 </button>
@@ -134,6 +139,7 @@ const SideBar = ({ modelOption, setModelOption, clearChatHistory, setResponseOpt
                   tabIndex="-1"
                   id="menu-item-2"
                   onClick={() => handleOptionClick('manager')}
+                  data-allow-default="true"
                 >
                   Team Builder
                 </button>
